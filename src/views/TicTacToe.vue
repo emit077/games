@@ -2,7 +2,7 @@
   <div class="pt-10">
     <h1 class="text-h2 font-weight-bold font-italic text-center">Tic Tac Toe</h1>
   </div>
-  <div class="my-8 text-center">
+  <div class="my-8 text-center parent-div">
     <div v-for="row in rows" :key="row" class="text-center">
     <span v-for="col in rows" :key="col">
       <!--      {{ (row - 1) + "," + (col - 1) }}-->
@@ -12,15 +12,18 @@
     </div>
     <v-btn @click="restartGame" class="mt-8">Restart</v-btn>
   </div>
-  <p v-if="isWin" class="text-h4 font-weight-bold text-center ">{{ result }}</p>
+  <p v-if="result" class="text-h4 font-weight-bold text-center ">{{ result }}</p>
 </template>
 <!--  -->
 <style lang="scss" scoped>
+.parent-div {
+  //transform: rotate(45deg);
+}
+
 input {
   width: 80px;
-  height: 52px;
+  height: 60px;
   margin: auto;
-
   //border-radius: 6px;
   font-size: 30px;
   text-align: center;
@@ -105,25 +108,34 @@ export default {
         }
       }
 
-      // check game over
-      // // check diagonal
-      // let isMatch = true
-      // for (let i = 0; i < this.rows; i++) {
-      //   let val = this.data[i][0] || null
-      //   isMatch = val && isMatch && this.data[i][i] == val ? true : false
-      // }
-      // if (isMatch) {
-      //   this.isWin = true
-      // }
+      // check diagonal 1
+      let flag_1 = true
+      for (let i = 0; i < this.rows; i++) {
+        let val = this.data[0][0] || null
+        flag_1 = val && flag_1 && this.data[i][i] == val ? true : false
+      }
+      if (flag_1)
+        this.isWin = true
 
-      //set result
+      // check diagonal 2
+      let flag_2 = true
+      for (let i = 0; i < this.rows; i++) {
+        let val = this.data[0][this.rows-1] || null
+        flag_2 = val && flag_2 && this.data[i][this.rows-1-i] == val ? true : false
+      }
+      if (flag_2)
+        this.isWin = true
+
+
+      // check game over
       this.result = this.isWin ? this.lastInput + " Win" : ''
       if (this.inputCount == this.rows * this.rows)
-        this.result = "Game Over"
+        this.result = "Game Draw"
     },
     restartGame() {
       this.isWin = false
       this.lastInput = ''
+      this.inputCount = 0
       this.data = []
       for (let i = 0; i < this.rows; i++) {
         this.data.push([])
@@ -152,7 +164,6 @@ export default {
 
       if (this.data[row][col])
         className = className + " " + this.data[row][col] + "-color"
-      console.log(row, col, className)
       return className
     }
   }
